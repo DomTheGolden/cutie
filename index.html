@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Happy Little Love Quiz ✨💖</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Caveat:wght@700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #fff4a8 0%, #ffd6e7 32%, #ffc6a8 66%, #c9f7e8 100%);
+    overflow: hidden;
+    padding: 20px;
+  }
+
+  /* floating background hearts */
+  #hearts-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .bg-heart {
+    position: absolute;
+    top: -40px;
+    animation: floatDown linear infinite;
+    opacity: .7;
+    filter: blur(.2px);
+    user-select: none;
+  }
+  @keyframes floatDown {
+    to { transform: translateY(110vh) rotate(360deg); }
+  }
+
+  .card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255,255,255,.97);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 520px;
+    border-radius: 36px;
+    padding: 36px 32px 32px;
+    text-align: center;
+    box-shadow: 0 25px 80px rgba(255,145,90,.28), 0 5px 0 #fff inset;
+    border: 3px solid #fff;
+    transition: transform .3s;
+  }
+
+  .progress-wrap {
+    background: #fff0c2;
+    height: 12px;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 22px;
+  }
+  #progress {
+    height: 100%;
+    width: 5%;
+    background: linear-gradient(90deg, #ff9f68, #ff6fae, #9cebd2);
+    border-radius: 99px;
+    transition: width .5s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .cute-img {
+    font-size: 92px;
+    line-height: 1;
+    margin-bottom: 10px;
+    display: inline-block;
+    animation: bounce 1.7s ease-in-out infinite;
+    filter: drop-shadow(0 8px 15px rgba(255,78,122,.25));
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0) rotate(-3deg) scale(1); }
+    50% { transform: translateY(-12px) rotate(3deg) scale(1.05); }
+  }
+
+  h1 {
+    font-size: 1.9rem;
+    color: #50304d;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  h1 .script {
+    font-family: 'Caveat', cursive;
+    color: #f05b91;
+    font-size: 2.2rem;
+  }
+  p.subtitle {
+    color: #9b6687;
+    font-weight: 500;
+    font-size: 1.05rem;
+    min-height: 48px;
+    margin-bottom: 22px;
+  }
+  #tease {
+    min-height: 22px;
+    font-weight: 700;
+    color: #f05b91;
+    margin-bottom: 8px;
+    font-size: .95rem;
+    transition: opacity .2s;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    min-height: 80px;
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+  button {
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    border-radius: 99px;
+    transition: transform .2s, box-shadow .2s;
+  }
+  #yesBtn {
+    background: linear-gradient(135deg, #ff8b67, #ff69a8, #b58cff);
+    color: white;
+    font-size: 1.25rem;
+    padding: 16px 42px;
+    box-shadow: 0 10px 25px rgba(240,91,145,.28);
+  }
+  #yesBtn:hover { transform: scale(1.06); box-shadow: 0 15px 35px rgba(240,91,145,.35); }
+  #yesBtn:active { transform: scale(.97); }
+
+  #noBtn {
+    background: #f5f0ff;
+    color: #786b8b;
+    font-size: 1.1rem;
+    padding: 14px 32px;
+    box-shadow: 0 5px 15px rgba(0,0,0,.08);
+    transition: left .18s ease-out, top .18s ease-out, transform .2s;
+    z-index: 10;
+    will-change: left, top;
+  }
+
+  .single-btn { justify-content: center; }
+
+  .choices-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .plan-card {
+    background: linear-gradient(145deg, #fff9e9, #fff0f7);
+    border: 2px solid #ffe0b8;
+    border-radius: 20px;
+    padding: 16px 10px;
+    cursor: pointer;
+    transition: all .2s;
+    font-weight: 700;
+    color: #50304d;
+  }
+  .plan-card span { font-size: 32px; display: block; margin-bottom: 6px; }
+  .plan-card:hover { transform: translateY(-3px) scale(1.02); border-color: #f05b91; background: #fff5dc; }
+  .plan-card.selected {
+    background: linear-gradient(135deg, #ff8b67, #ff69a8, #b58cff);
+    color: white;
+    border-color: #f05b91;
+    transform: scale(1.03);
+    box-shadow: 0 10px 25px rgba(240,145,100,.25);
+  }
+  .day-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
+  .day-btn {
+    background: white;
+    border: 2px solid #ffe0b8;
+    padding: 10px 18px;
+    border-radius: 99px;
+    font-weight: 700;
+    color: #50304d;
+  }
+  .day-btn.selected, .day-btn:hover {
+    background: #ff2e63; color: white; border-color: #f05b91;
+  }
+
+  .big-yes {
+    font-size: 1.4rem !important;
+    padding: 20px 55px !important;
+  }
+
+  #confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -30px;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(720deg); }
+  }
+
+  .shake { animation: shake .4s; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
+  }
+
+  .counter {
+    margin-top: 18px;
+    font-size: .85rem;
+    color: #b28ba8;
+    font-weight: 600;
+  }
+
+  .footer { margin-top: 14px; font-size: .75rem; color: #bda2b7; }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 1.5rem; }
+    .card { padding: 28px 20px; }
+    .cute-img { font-size: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="hearts-bg"></div>
+<div id="confetti"></div>
+
+<div class="card" id="card">
+  <div class="progress-wrap"><div id="progress"></div></div>
+  <div class="cute-img" id="cuteImg">💌</div>
+  <h1 id="title">Hiii sunshineee <span class="script">youuu! ✨</span></h1>
+  <p class="subtitle" id="subtitle">I made a tiny happy quiz just for you!! 🌈 (it's only a little bit silly hehe)</p>
+  <div id="tease"></div>
+
+  <div class="btn-row" id="btnRow">
+    <button id="yesBtn">Let's gooo! 💖</button>
+    <button id="noBtn" style="display:none;">No</button>
+  </div>
+
+  <div id="extraArea"></div>
+
+  <div class="counter" id="counter"></div>
+  <div class="footer">made with extra sparkles by someone who thinks you're pretty wonderful ✨💗</div>
+</div>
+
+<script>
+const title = document.getElementById('title');
+const subtitle = document.getElementById('subtitle');
+const cuteImg = document.getElementById('cuteImg');
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const btnRow = document.getElementById('btnRow');
+const extraArea = document.getElementById('extraArea');
+const teaseEl = document.getElementById('tease');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+const card = document.getElementById('card');
+
+let step = 0;
+let noDodges = 0;
+let yesScale = 1;
+let selectedPlan = null;
+let selectedDay = null;
+let noIsRunning = false;
+
+const teases = [
+  "Hehe, not so fast! 😜",
+  "Zoomies!! 💨💕",
+  "Oopsie, try your luck! 💖",
+  "That button's feeling shy today 🙈",
+  "A tiny dramatic face has entered the chat 🥺",
+  "That button is being a little silly 😌✨",
+  "Alert! A runaway button! 🚨💗",
+  "Sending extra sparkles your wayyy 🥰✨"
+];
+
+const steps = [
+  {
+    img: "💌",
+    title: `Hiii sunshineee <span class="script">youuu! ✨</span>`,
+    sub: "I made a tiny happy quiz just for you!! 🌈 (it's only a little bit silly hehe)",
+    yes: "Let's gooo! 💖",
+    no: false,
+    progress: 5
+  },
+  {
+    img: "🥺👉👈",
+    title: `Ready for some <span class="script">ridiculously cute questions?!</span>`,
+    sub: "No studying needed — just bring that adorable smile! ☀️",
+    yes: "Yesss, let's do this! 🎉",
+    no: "No",
+    progress: 20
+  },
+  {
+    img: "😳💖",
+    title: `Okayyy, important question... <span class="script">am I cute or what?! 🥹</span>`,
+    sub: "Be honest... but remember I am very easily bribed with compliments 😂💕",
+    yes: "Obviouslyyy! 😎💖",
+    no: "No 🙄",
+    progress: 40
+  },
+  {
+    img: "🤡",
+    title: `Next question! <span class="script">are my jokes secretly hilarious?</span>`,
+    sub: "Even the terrible ones? Especially the terrible ones? 🤭",
+    yes: "Comedy legend 😂✨",
+    no: "No 🙄",
+    progress: 60
+  },
+  {
+    img: "😏",
+    title: `Quick little survey... <span class="script">how much do you adore me?</span>`,
+    sub: "The scale may or may not be wildly unfair 💅💗",
+    custom: "scale",
+    progress: 75
+  },
+  {
+    img: "💍🌹",
+    title: `Final question, cutie... <span class="script">wanna go on a date with me? 🌷</span>`,
+    sub: "No pressure at all — I'd just really love to spend some time with you! 🥰",
+    yes: "YAYYYY!! 💖🎉",
+    no: "No 😢",
+    progress: 90,
+    final: true
+  }
+];
+
+function setProgress(p) { progress.style.width = p + "%"; }
+
+function showStep(i) {
+  step = i;
+  const s = steps[i];
+  extraArea.innerHTML = "";
+  teaseEl.textContent = "";
+  btnRow.style.display = "flex";
+  // put No back inside the card for its normal in-flow position
+  btnRow.appendChild(noBtn);
+  noBtn.style.position = "";
+  noBtn.style.left = "";
+  noBtn.style.top = "";
+  noBtn.style.zIndex = "";
+  noBtn.style.border = "";
+  noBtn.style.boxShadow = "";
+  noIsRunning = false;
+
+  cuteImg.textContent = s.img;
+  title.innerHTML = s.title;
+  subtitle.textContent = s.sub;
+  setProgress(s.progress);
+  counter.textContent = i > 0 ? `question ${Math.min(i,5)} / 5` : "";
+
+  // reset button sizes unless final boss
+  if (!s.final) {
+    yesScale = 1;
+    yesBtn.style.transform = "";
+    yesBtn.style.fontSize = "";
+    yesBtn.style.padding = "";
+    noBtn.style.transform = "";
+    noBtn.style.fontSize = "";
+    noBtn.style.opacity = "";
+  }
+
+  if (s.custom === "scale") {
+    btnRow.style.display = "none";
+    extraArea.innerHTML = `
+      <div class="choices-grid">
+        <div class="plan-card" onclick="nextStep()"><span>🔟</span>10</div>
+        <div class="plan-card" onclick="nextStep()"><span>1️⃣1️⃣</span>11 (rebel)</div>
+        <div class="plan-card" onclick="nextStep()"><span>💯</span>1000%</div>
+        <div class="plan-card" onclick="nextStep()"><span>♾️</span>infinityyy</div>
+      </div>`;
+    return;
+  }
+
+  btnRow.style.display = "flex";
+  yesBtn.style.display = "";
+  yesBtn.textContent = s.yes;
+
+  if (s.no) {
+    noBtn.style.display = "";
+    noBtn.textContent = s.no;
+    enableRunaway();
+  } else {
+    noBtn.style.display = "none";
+    btnRow.classList.add("single-btn");
+  }
+}
+
+function nextStep() {
+  popHearts(15);
+  if (step < steps.length - 1) {
+    showStep(step + 1);
+  } else {
+    showDatePlanner();
+  }
+}
+
+// YES always advances
+yesBtn.addEventListener("click", () => {
+  if (step === steps.length - 1) {
+    showDatePlanner();
+  } else {
+    nextStep();
+  }
+});
+
+// --- RUNAWAY NO LOGIC: hover/tap = hop to a random spot all over the screen ---
+const FLEE_RADIUS = 110;   // start hopping when pointer/finger gets this close (px)
+let lastFlee = 0;
+
+function noButtonActive() {
+  if (!steps[step]) return false;
+  if (!steps[step].no && !steps[step].final) return false;
+  if (btnRow.style.display === "none") return false;
+  // button hidden via showStep / date planner
+  if (noBtn.style.display === "none") return false;
+  if (noBtn.getBoundingClientRect().width === 0) return false;
+  return true;
+}
+
+function enableRunaway() {
+  // Tap (mobile): hop AWAY from the finger, same as desktop — no more
+  // full-screen random teleport that looks like disappearing.
+  noBtn.ontouchstart = (e) => {
+    e.preventDefault();
+    const t = e.touches && e.touches[0];
+    if (t) fleeFromCursor(t.clientX, t.clientY);
+    else dodgeTeleport();
+  };
+  noBtn.onclick = (e) => {
+    e.preventDefault();
+    if (typeof e.clientX === "number" && (e.clientX || e.clientY)) fleeFromCursor(e.clientX, e.clientY);
+    else dodgeTeleport();
+  };
+
+  // DESKTOP: flee on hover attempt (mouseenter only — mouseover refires
+  // during the move itself and causes chained jumps that look like vanishing)
+  noBtn.onmouseenter = (e) => { fleeFromCursor(e.clientX, e.clientY); };
+  noBtn.onmouseover = null;
+}
+
+// Runs away when the pointer/finger gets close, moves AWAY from it.
+// Works for mouse (mousemove) and finger sliding (touch pointermove).
+function handleCursorMove(mx, my) {
+  if (!noButtonActive()) return;
+  const r = noBtn.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top + r.height / 2;
+  if (Math.hypot(mx - cx, my - cy) < FLEE_RADIUS) fleeFromCursor(mx, my);
+}
+document.addEventListener("mousemove", (e) => handleCursorMove(e.clientX, e.clientY));
+document.addEventListener("pointermove", (e) => {
+  // allow mouse AND touch/pen so a sliding finger also scares it away
+  handleCursorMove(e.clientX, e.clientY);
+});
+document.addEventListener("touchmove", (e) => {
+  const t = e.touches && e.touches[0];
+  if (t) handleCursorMove(t.clientX, t.clientY);
+}, { passive: true });
+
+function ensureFloating() {
+  if (!noIsRunning) {
+    noIsRunning = true;
+    const r = noBtn.getBoundingClientRect();
+    // IMPORTANT: .card has backdrop-filter, which makes it the containing
+    // block for fixed descendants — so a fixed button inside .card is NOT
+    // viewport-relative and viewport coords fling it off-screen.
+    // Move it to <body> first, then pin it with viewport coords.
+    document.body.appendChild(noBtn);
+    noBtn.style.position = "fixed";
+    noBtn.style.zIndex = 9999;
+    noBtn.style.margin = "0";
+    noBtn.style.left = r.left + "px";
+    noBtn.style.top = r.top + "px";
+    // high-visibility so it's easy to track while fleeing
+    noBtn.style.boxShadow = "0 8px 25px rgba(255,46,99,.45)";
+    noBtn.style.border = "2px solid #ff2e63";
+    noBtn.style.opacity = "1";
+    noBtn.style.display = "";
+  }
+}
+
+function dodgeEffects() {
+  noDodges++;
+  teaseEl.textContent = teases[Math.min(noDodges - 1, teases.length - 1)];
+
+  card.classList.remove("shake");
+  void card.offsetWidth;
+  card.classList.add("shake");
+
+  // Yes stays the same size — no growing
+  if (noDodges >= 8) {
+    noBtn.textContent = "pls 🥺";
+  } else {
+    noBtn.textContent = ["No", "Nope!", "Nuh-uh!", "Try again!", "Nope 😜", "Still no?", "Give up? 💖", "Just say yes!"][Math.min(noDodges, 7)];
+  }
+  counter.textContent = `No attempts escaped: ${noDodges} 😂`;
+}
+
+// Hops to a random spot anywhere on screen — always fully visible.
+function dodgeTeleport() {
+  dodgeEffects();
+  ensureFloating();
+
+  // generous margin so it never touches screen edges / goes off-screen
+  const pad = 80;
+  const w = noBtn.offsetWidth || 80;
+  const h = noBtn.offsetHeight || 40;
+  const maxX = Math.max(window.innerWidth - w - pad, pad);
+  const maxY = Math.max(window.innerHeight - h - pad, pad);
+
+  let x = pad + Math.random() * (maxX - pad);
+  let y = pad + Math.random() * (maxY - pad);
+
+  // belt & suspenders: hard-clamp so it can never end up off-screen
+  // even if measurements raced a reflow
+  x = Math.min(Math.max(x, pad), maxX);
+  y = Math.min(Math.max(y, pad), maxY);
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+
+  // self-healing: after the slide finishes, nudge back on-screen if needed
+  requestAnimationFrame(() => {
+    const r = noBtn.getBoundingClientRect();
+    let fixX = parseFloat(noBtn.style.left);
+    let fixY = parseFloat(noBtn.style.top);
+    if (r.right > window.innerWidth - 8) fixX -= (r.right - (window.innerWidth - 8));
+    if (r.bottom > window.innerHeight - 8) fixY -= (r.bottom - (window.innerHeight - 8));
+    if (r.left < 8) fixX += (8 - r.left);
+    if (r.top < 8) fixY += (8 - r.top);
+    noBtn.style.left = fixX + "px";
+    noBtn.style.top = fixY + "px";
+  });
+}
+
+// Hover / close approach = hop all over the screen (throttled so each
+// hover reads as one hop, not a vibration)
+function fleeFromCursor(mx, my) {
+  const now = performance.now();
+  if (now - lastFlee < 180) return;
+  lastFlee = now;
+  dodgeTeleport();
+}
+
+// keep old name working just in case
+function dodge() { dodgeTeleport(); }
+
+// --- DATE PLANNER FINALE ---
+function showDatePlanner() {
+  setProgress(100);
+  cuteImg.textContent = "🥳💖";
+  title.innerHTML = `YIPPEEEE!! <span class="script">This is so exciting!! 🎉</span>`;
+  subtitle.textContent = "Okay, let's plan something lovely together!! 💕 Pick whatever sounds the most fun...";
+  teaseEl.textContent = "";
+  btnRow.style.display = "none";
+  noBtn.style.display = "none"; // it lives in <body> while fleeing — hide it too
+  counter.textContent = "";
+
+  celebrate();
+
+  extraArea.innerHTML = `
+    <div style="text-align:left; font-weight:700; color:#5d2236; margin:10px 0 8px;">First up: choose our little adventure! 🌈</div>
+    <div class="choices-grid" id="planGrid">
+      <div class="plan-card" data-plan="Romantic Dinner 🍝"><span>🍝</span>Romantic Dinner</div>
+      <div class="plan-card" data-plan="Movie Night 🎬"><span>🎬</span>Movie Night</div>
+      <div class="plan-card" data-plan="Sunset Picnic 🧺"><span>🧺</span>Sunset Picnic</div>
+      <div class="plan-card" data-plan="Boba + Walk 🧋"><span>🧋</span>Boba + Walk</div>
+      <div class="plan-card" data-plan="Stargazing Drive 🌃"><span>🌃</span>Stargazing</div>
+      <div class="plan-card" data-plan="Fun Adventure 🎡"><span>🎡</span>Fun Adventure</div>
+    </div>
+    <div style="text-align:left; font-weight:700; color:#5d2236; margin:16px 0 4px;">Now pick a day that works for you! 📅💛</div>
+    <div class="day-row" id="dayRow">
+      <button class="day-btn" data-day="Friday 💕">Friday</button>
+      <button class="day-btn" data-day="Saturday 💖">Saturday</button>
+      <button class="day-btn" data-day="Sunday 🌸">Sunday</button>
+      <button class="day-btn" data-day="Surprise me 😏">Surprise me</button>
+    </div>
+    <button id="confirmDate" style="margin-top:22px; background:#ccc; color:white; font-size:1.15rem; padding:15px 40px; width:100%; cursor:not-allowed;" disabled>Pick both to continue 💌</button>
+  `;
+
+  const confirmBtn = document.getElementById("confirmDate");
+
+  document.querySelectorAll("#planGrid .plan-card").forEach(c => {
+    c.addEventListener("click", () => {
+      document.querySelectorAll("#planGrid .plan-card").forEach(x => x.classList.remove("selected"));
+      c.classList.add("selected");
+      selectedPlan = c.dataset.plan;
+      popHearts(10);
+      checkReady();
+    });
+  });
+  document.querySelectorAll("#dayRow .day-btn").forEach(b => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll("#dayRow .day-btn").forEach(x => x.classList.remove("selected"));
+      b.classList.add("selected");
+      selectedDay = b.dataset.day;
+      popHearts(10);
+      checkReady();
+    });
+  });
+
+  function checkReady() {
+    if (selectedPlan && selectedDay) {
+      confirmBtn.disabled = false;
+      confirmBtn.style.background = "linear-gradient(135deg, #ff2e63, #ff6f91)";
+      confirmBtn.style.cursor = "pointer";
+      confirmBtn.style.boxShadow = "0 10px 25px rgba(255,46,99,.4)";
+      confirmBtn.textContent = "YAY, it's a date! 💘";
+    }
+  }
+
+  confirmBtn.addEventListener("click", () => {
+    if (selectedPlan && selectedDay) showFinale();
+  });
+}
+
+function showFinale() {
+  cuteImg.textContent = "💘";
+  title.innerHTML = `IT'S A DATE!! <span class="script">I can't wait!! 💖</span>`;
+  subtitle.innerHTML = "";
+  extraArea.innerHTML = `
+    <div style="background:#fff0f4; border:2px dashed #ff6f91; border-radius:20px; padding:20px; margin:10px 0;">
+      <div style="font-size:2.5rem;">${selectedPlan.split(' ').pop() || '💖'}</div>
+      <div style="font-size:1.2rem; font-weight:700; color:#4a1d2f; margin-top:8px;">${selectedPlan}<br/>on ${selectedDay}</div>
+      <div style="margin-top:10px; color:#9b5b70; font-weight:600;">Save our cute little plan! 🥹💕<br/>I'm already smiling!!</div>
+    </div>
+    <button id="restart" style="margin-top:10px; background:white; border:2px solid #ffd0dc; padding:12px 28px; color:#ff2e63;">Replay questions 🔁</button>
+  `;
+  celebrateBig();
+  counter.textContent = "Officially making happy plans!! 💖✨";
+  document.getElementById("restart").addEventListener("click", () => {
+    noDodges = 0; yesScale = 1; selectedPlan = null; selectedDay = null;
+    yesBtn.classList.remove("big-yes");
+    showStep(0);
+  });
+}
+
+// --- Effects ---
+function popHearts(n) {
+  const box = document.getElementById("confetti");
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement("div");
+    el.className = "confetti-piece";
+    el.textContent = ["💖","💕","💘","🌸","✨","💝"][Math.floor(Math.random()*6)];
+    el.style.left = Math.random()*100 + "vw";
+    el.style.fontSize = (14 + Math.random()*22) + "px";
+    el.style.animationDuration = (1.5 + Math.random()*1.5) + "s";
+    box.appendChild(el);
+    setTimeout(()=>el.remove(), 3200);
+  }
+}
+function celebrate() { popHearts(80); }
+function celebrateBig() {
+  popHearts(120);
+  setTimeout(()=>popHearts(80), 800);
+  setTimeout(()=>popHearts(80), 1600);
+}
+
+// background floating hearts
+(function bgHearts(){
+  const bg = document.getElementById("hearts-bg");
+  const hearts = ["💖","💕","🤍","🌸","💗","✨"];
+  setInterval(()=>{
+    if (document.querySelectorAll(".bg-heart").length > 30) return;
+    const el = document.createElement("div");
+    el.className = "bg-heart";
+    el.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+    el.style.left = Math.random()*100 + "vw";
+    el.style.fontSize = (12 + Math.random()*28) + "px";
+    el.style.animationDuration = (4 + Math.random()*5) + "s";
+    bg.appendChild(el);
+    setTimeout(()=>el.remove(), 9000);
+  }, 400);
+})();
+
+// mobile: prevent No from being tapped via keyboard focus
+noBtn.addEventListener("focus", (e) => { e.target.blur(); dodge(); });
+
+showStep(0);
+</script>
+</body>
+</html>
